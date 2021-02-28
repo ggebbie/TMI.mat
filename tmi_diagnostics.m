@@ -37,6 +37,7 @@ load A  %% choose a A*.mat file
 %        (b) propagate the dye with the matrix A, with the result     % 
 %            being the fraction of water originating from the         %
 %            surface region.                                          %
+% See Section 2b of Gebbie & Huybers 2010, esp. eqs. (15)-(17).       %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -87,9 +88,9 @@ load A  %% choose a A*.mat file
  
  % Determine where the mixed layer is located in the vector of coordinates.
  inmixlyr = find(diag(A)==1);
+ N = length(i);
  notmixlyr = (1:N)'; notmixlyr(inmixlyr) = [];
  
- N = length(i);
  d = zeros(N,1);
  d(notmixlyr) = -dP; % a vector with remineralized phosphate sources.
  
@@ -111,7 +112,9 @@ load A  %% choose a A*.mat file
 % and c is the fraction of volume from a given source which         %
 % satisfies the equation A c = d.                                   %
 % Next, dV/d(d) = A^(-T) v, and dV/d(d) is exactly the volume       %
-% originating from each source.                                     %
+% originating from each source.
+%
+% See Section 3 and Supplementary Section 4, Gebbie & Huybers 2011. 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
  NZ = max(k);
@@ -207,7 +210,9 @@ load A  %% choose a A*.mat file
 %                                                                  %
 % Mathematically, minimize J = (C-Cobs)^T W (C-Cobs) subject to    %
 %                         AC = d + Gamma u                         %
-%  where u is the estimated change in surface concentration.       %
+%  where u is the estimated change in surface concentration.    % 
+%
+% See Supplementary Section 2, Gebbie & Huybers 2011.
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
  
   % use temperature as an example, with Tobs the observed temperature vector.
@@ -247,8 +252,10 @@ load A  %% choose a A*.mat file
   lbT = -2.*ones(Nsfc,1); % temperature lower bound: can not freeze.
   ubT = 40.*ones(Nsfc,1); % ad-hoc temperature upper bound: 40 C.
 
-  %% 2 methods: a) compute full Hessian, b) use functional form of
-  %Hessian. (b) is preferred.
+  %% 3 methods: 1) quadratic programming using full Hessian, 2)
+  % quadratic programming using functional form of Hessian, 3)
+  % Constrained minimization (without inequality constraints), 
+  % 4) Unconstrained minimization. 
   method = 3;
   if method==1
     H1 = Q * (U \ (L \ (P * (R \ dT)))) -Tobs; 
@@ -264,7 +271,7 @@ load A  %% choose a A*.mat file
                                                  % shifts (uT) to
                                                  % sfc. temp.
     
-  elseif method==2
+  elseif method==2 % works with MATLAB R2012a. 
     [fval, exitflag, output, uT] = hessianprob(A,Gamma,invWT,Tobs,u0,dT,lbT,ubT);
     Tmod2 =  Q * (U \ (L \ (P * (R \ (dT+Gamma*uT))))) ; % best estimate
     J2 = (Tmod2-Tobs)'*invWT*(Tmod2-Tobs)./Nfield % expect J2 ~ 1, J2<J1
@@ -276,21 +283,215 @@ load A  %% choose a A*.mat file
      %options = optimset('Algorithm','trust-region-reflective','Display','iter', ...
      %        'GradObj','on','LargeScale','on');
      noncons = 0;
+     isfc = find(kt==1);
      uTtest= fmincon(@(x)objfun(x,A,invWT,Tobs,isfc,iint,noncons),Tobs(isfc),[],[],[],[],lbT,ubT,[],options);
      J2 = objfun(uTtest,A,invWT,Tobs,isfc,iint,noncons) %
                       % expect J2 ~ 1, J2<J1
      d2 = zeros(Nfield,1); d2(isfc) = uTtest;
      Tmod2 =  Q * (U \ (L \ (P * (R \ d2)))) ; % best estimate
+  elseif method==4
+      % there is an analytic method showcased in global inventory
+      % problem. (Gebbie 2015)
   
   end
- 
+  
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Example 4B: Same as example 4 but the observations are sparse and
+% the inequality constraint is dropped.
+%
+%        Find the distribution of a tracer given:                 %
+%       (a) the pathways described by A,                          %
+%       (b) interior sources and sinks given by dC,               % 
+%           that best fits THE SPARSE observations, Cobs,         %
+%                                                                  %
+% Mathematically, minimize J = (C-Cobs)^T W (C-Cobs) subject to    %
+%                         AC = d + Gamma u                         %
+%  where u is the estimated change in surface concentration.    % 
+%
+% See Supplementary Section 2, Gebbie & Huybers 2011.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+% load a circulation field.
+% load A_4deg_2012
+
+% get the longitude, latitude, depth, value of the
+% observations, and their expected error.
+% (lon_obs, lat_obs, depth_obs, y, err_obs)
+lon_obs = [160 180 200 220];
+lat_obs = [0   0   0   0 ];
+depth_obs=[2e3 2e3 2e3 2e3];
+
+
+LONv = LON(i); % grid longitudes in vector form.
+LATv = LAT(j);
+E = Emaker(lon_obs,lat_obs,depth_obs,LONv,LATv,k,DEPTH,6);
+
+% For this example, sample the observations perfectly from existing
+% temperature observations.
+load tracerobs_4deg_33lev_woce Tobs Terr
+y = E*Tobs;
+err_obs = 0.1;
+
+W  = 1./err_obs.^2;
+
+% set up the control variables.
+Nsfc = sum(k==1);
+isfc = find(k==1);
+Nfield = length(k);
+Gamma = sparse(isfc,1:Nsfc,ones(Nsfc,1),Nfield,Nsfc);
+
+% what is the uncertainty in the surface boundary condition?
+err_d = 1;
+diagonal = false; % or set to false.
+if diagonal 
+  S     = 1./err_d.^2; 
+else
+  % if diagonal==false
+  % impose spatial smoothing in surface b.c.
+  lengthscale = 4; % horizontal lengthscale in units of gridcells
+  factor = 0.126.*(1/lengthscale)^2 ; 
+  load Del2_4deg.mat
+  S = factor.* sparse(1:Nsfc,1:Nsfc,1./err_d.^2);
+  S = S + Del2'*(lengthscale^4.*S*Del2);
+end
+  
+% Get the first guess of surface boundary conditions and interior
+% sources and sinks.
+% USER: FILL IN THIS LINE.
+% d= first guess of r.h.s.
+d0 = Tobs;   % truth is imposed as first-guess boundary condition.
+d0(k>1) = 0; % conservative in interior
+
+% c0 = first guess property field
+c0 = A\d0;
+
+% r = first guess misfit.
+r = E*c0-y;
+
+% get transpose(f)
+f1 =   W*(E'*r);
+f2 =  A'\f1;
+f  = Gamma'*f2;
+clear fT1 fT2
+
+% 2 methods to solve: iterative or direct
+iterative = false;
+if iterative % method 1
+  % put in the form of a least-squares problem. Hu = -f;
+  u = lsqr(@(x,tflag)afun(x,Gamma,A,E,W,S),-f,1e-6,20);
+else % method 2
+  tic; H = get_hessian(Gamma,A,E,W,S); toc;
+  u = -H\f;
+end
+
+% update the boundary conditions with the least squares solution.
+d = d0 + Gamma*u;
+
+% solve for the three dimensional property field.
+c = A\d;
+cfld = vector_to_field(c,i,j,k);
+
+% how much did the data points reduce the error (globally).
+sqrt(sum((c-Tobs).^2)/Nfield)
+sqrt(sum((c0-Tobs).^2)/Nfield)
+
+% how much did the data points reduce the error (at data points).
+Nobs = length(y);
+sqrt(sum((E*c-y).^2)/Nobs)
+sqrt(sum((E*c0-y).^2)/Nobs)
+  
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Example 4C: Same as example 4B but the tracer is nonconservative.
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+% load a circulation field.
+% load A_4deg_2012
+
+% get the longitude, latitude, depth, value of the
+% observations, and their expected error.
+% (lon_obs, lat_obs, depth_obs, y, err_obs)
+lon_obs = [160 180 200 220];
+lat_obs = [0   0   0   0 ];
+depth_obs=[2e3 2e3 2e3 2e3];
+
+LONv = LON(i); % grid longitudes in vector form.
+LATv = LAT(j);
+E = Emaker(lon_obs,lat_obs,depth_obs,LONv,LATv,k,DEPTH,6);
+
+% For this example, sample the observations perfectly from existing
+% temperature observations.
+load tracerobs_4deg_33lev_woce Pobs 
+y = E*Pobs;
+err_obs = 0.1;
+
+W  = 1./err_obs.^2;
+
+% set up the control variables.
+
+% what is the uncertainty in the first guess global field?
+% for sake of argument, use the global observations as the first
+% guess.
+c0 = 1.0.*ones(Nfield,1);
+err_c0 = 3;
+S     = 1./err_d.^2; % this step could be done better -- impose
+                     % spatial smoothing in surface b.c.
+
+% Get the first guess of surface boundary conditions and interior
+% sources and sinks.
+% USER: FILL IN THIS LINE.
+% d= first guess of r.h.s.
+
+% diagnose the nonconservative effects in the dataset.
+% surface boundary conditions.
+q = A*Pobs;
+
+% to be consistent: use same surface boundary condition from above.
+
+% what is error in surface boundary conditions?
+err_sfc = 5;
+
+% what is the assumed error in the nonconservative effects?
+err_noncons = 1e-3;
+
+% turn into a weighting matrix.
+qerr = zeros(Nfield,1);
+qerr(k==1) = err_sfc;
+qerr(k>1) = err_noncons;
+Q = sparse(1:Nfield,1:Nfield,1./qerr.^2);
+
+ETWE = E'*(W*E);
+ATQA = A'*(Q*A);
+
+H = ETWE+ATQA+S*speye(Nfield);
+
+f = E'*(W*y) + A'*(Q*q) + S.*(c0);
+
+c = H\f;
+
+% update the boundary conditions with the least squares solution.
+cfld = vector_to_field(c,i,j,k);
+
+% how much did the data points reduce the error (globally).
+sqrt(sum((c-Pobs).^2)/Nfield)
+sqrt(sum((c0-Pobs).^2)/Nfield)
+
+% how much did the data points reduce the error (at data points).
+Nobs = length(y);
+sqrt(sum((E*c-y).^2)/Nobs)
+sqrt(sum((E*c0-y).^2)/Nobs)
+
+% unlike Example 4, does not enforce non-negativity.
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 5: How to modify or reconstruct the TMI pathways,            %
 %            i.e., the A matrix.                                       %
 %                                                                      %
 % Each row of A is determined by the solution of a non-negative        %
-% least squares problem via the method of Lawson and Hanson.           %
+% least squares problem via the method of Lawson and Hanson.
+%
+% See Section 2a, Gebbie & Huybers 2010.
+%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
  
 it = i; jt = j; kt = k;
@@ -391,6 +592,8 @@ end
 % from location "pt" that go through each interior location before
 % getting to the surface.
 %
+% This is unpublished. 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Nfield = size(A,1);
 d = zeros(Nfield,1);
@@ -421,5 +624,13 @@ Vsave = vector_to_field(vsave,it,jt,kt);
 contourf(LAT,-DEPTH,log10(sq(Vsave(:,:,78))))
 [c,h]=contourf(LAT,-DEPTH,log10(sq(Vsave(:,:,78))),-8:0.25:0)
 [c,h]=contourf(LON,LAT,log10(sq(Vsave(23,:,:))),-8:.25:0)
+
+
+
+
+
+
+
+
 
 

@@ -12,6 +12,7 @@ load L_4deg_2012
 
 %% List the years for which the global tracer is output.
 years = [0:1:100 110:10:1000 1025:25:2000 2100:100:5000];
+
 yearsmid = (years(1:end-1)+years(2:end))./2;
 NY = length(years)
 
@@ -28,9 +29,9 @@ NY = length(years)
 % 17) Atlantic TROP, 18) Pacific TROP, 19) Indian TROP
 
 % The next lines use the pre-defined regions. 
- load c_all_4deg
- wm = 1;
- c0 = squeeze(c_all(:,wm));
+load c_all_4deg
+wm = 1; % these are the pre-defined regions.
+c0 = squeeze(c_all(:,wm));
 
 % Pre-allocate arrays.
 C = nan(NY,Nfield);
@@ -55,8 +56,41 @@ for nn = 1:NN
   T(ind) = sq(Ttmp);
   %save ttdsummary C T % save intermediate values if necessary
 end
-save ttdsummary C T
+save transient_output C T
 
+%% For efficiency, C is 2D, but that's hard to visualize. 
+%  Translate it to a 4D array: time x depth x latitude x longitude
+for nn = 1:NY
+    nn
+    Cfield(nn,:,:,:) = vector_to_field(squeeze(C(nn,:)),it,jt,kt);
+end
+
+%% Now let plot at a given depth at a given time.
+depth_plot = 500; % choose a depth in meters.
+time_plot = 3; % choose a time in years.
+idepth = find(DEPTH==depth_plot);
+itime  = find(T==time_plot);
+figure
+contourf(LON,LAT,squeeze(Cfield(itime,idepth,:,:)),0:.05:1)
+ylabel('latitude [deg N]')
+xlabel('longitude [deg E]')
+colorbar
+
+%% Or plot a meridional section at a given longitude and time.
+lon_plot = -30;
+time_plot = 3; % choose a time in years.
+itime  = find(T==time_plot);
+if lon_plot < 0
+  ilon = find(LON== 360+lon_plot)
+else
+  ilon = find(LON== lon_plot);
+end
+
+figure
+contourf(LAT,-DEPTH,squeeze(Cfield(itime,:,:,ilon)),0:.05:1)
+xlabel('latitude [deg N]')
+ylabel('depth [m]')
+colorbar
 
 
 
