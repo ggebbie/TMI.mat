@@ -15,7 +15,11 @@ Version 4, 13 July 2011, makes names consistent with papers.\
 Version 5, 28 July 2011, add TMI transient tracer simulation model.\
 Version 6, Nov 2012, bug fixes, use one LU decomp for both fwd and
                         adjoint, added global inversion example,
-                        SynTraCE-21 workshop update 
+                        SynTraCE-21 workshop update \
+Version 6.1, Jan 2013, added biogeochemical example, add
+                       vector_to_field back into tarball.\
+Version 6.2, July 2015, added sq.m function,
+                        fixed d_all to properly divide Atlantic/Pacific and put White Sea into Arctic.\
 
 # MAIN DIAGNOSTIC ROUTINES:
 
@@ -27,7 +31,7 @@ transient_driver.m : run a TMI transient tracer simulation model.
 A_2deg_2010.mat : TMI pathways matrix with 2x2 degree horizontal
                   resolution and 33 levels  G & H 2010) \
 A_4deg_2012.mat : updated TMI pathways matrix with 4x4 degree horizontal
-                  resolution and 33 levels (unpublished) \ 
+                  resolution and 33 levels (reference case, Gebbie 2014 (Paleoceanography))  \
 A_4deg_2010.mat : TMI pathways matrix with 4x4 degree horizontal resolution and 33 levels \
 L_4deg_2012.mat : TMI time tendency matrix (G & H 2012)\
 d_all_4deg.mat:  predefined oceanographically-relevant surface dye patches.\
@@ -42,8 +46,15 @@ tracerobs_2deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18
 field_to_vector.m : transfer from a 3D field to a vector\
 vector_to_field.m : and vice versa\
 hessianprob.m : For use in large quadratic problems, such as the example
-                in tmi_diagnostics.\
-sw_dist.m  : calculate distance using the seawater toolbox.\
-make_initial_conditions: for the TMI transient simulation.\
-mixit.m: used in make_initial_conditions\
+                in tmi_diagnostics.
+sw_dist.m  : calculate distance using the seawater toolbox.
+make_initial_conditions: for the TMI transient simulation.
+make_boundary_conditions: for the TMI transient simulation -- allow time varying surface concentration
+get_target: target surface concentration for transient run
+get_tendency: get time rate of change in transient simulation
+get_restoring_flux: calculate a Newtonian relaxation forcing at the sea surface (for transient run)
+mixit.m: used in make_initial_conditions
 objfun.m: used in fmincon (example 4)
+sq.m: replaces the squeeze function
+get_hessian.m: For directly solving a least squares problem
+
