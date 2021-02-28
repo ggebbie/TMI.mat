@@ -20,6 +20,7 @@ Version 6.1, Jan 2013, added biogeochemical example, add
                        vector_to_field back into tarball.\
 Version 6.2, July 2015, added sq.m function,
                         fixed d_all to properly divide Atlantic/Pacific and put White Sea into Arctic.\
+Version 7, Sept. 2016, major improvements to transient run: 2 types of initial conditions and boundary conditions.
 
 # MAIN DIAGNOSTIC ROUTINES:
 
