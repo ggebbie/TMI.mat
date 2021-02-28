@@ -47,15 +47,15 @@ tracerobs_2deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18
 field_to_vector.m : transfer from a 3D field to a vector\
 vector_to_field.m : and vice versa\
 hessianprob.m : For use in large quadratic problems, such as the example
-                in tmi_diagnostics.
-sw_dist.m  : calculate distance using the seawater toolbox.
-make_initial_conditions: for the TMI transient simulation.
-make_boundary_conditions: for the TMI transient simulation -- allow time varying surface concentration
-get_target: target surface concentration for transient run
-get_tendency: get time rate of change in transient simulation
-get_restoring_flux: calculate a Newtonian relaxation forcing at the sea surface (for transient run)
-mixit.m: used in make_initial_conditions
-objfun.m: used in fmincon (example 4)
-sq.m: replaces the squeeze function
+                in tmi_diagnostics.\
+sw_dist.m  : calculate distance using the seawater toolbox.\
+make_initial_conditions: for the TMI transient simulation.\
+make_boundary_conditions: for the TMI transient simulation -- allow time varying surface concentration\
+get_target: target surface concentration for transient run\
+get_tendency: get time rate of change in transient simulation\
+get_restoring_flux: calculate a Newtonian relaxation forcing at the sea surface (for transient run)\
+mixit.m: used in make_initial_conditions\
+objfun.m: used in fmincon (example 4)\
+sq.m: replaces the squeeze function\
 get_hessian.m: For directly solving a least squares problem
 
