@@ -77,6 +77,30 @@ load A  %% choose a A*.mat file
  lon_section = 330;
  isec = find(LON==330);
  contourf(LAT,-DEPTH,squeeze(C(:,:,isec)),0:0.05:1) % a sample plot at 22 W.
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Example 1B: Determine the total amount of remineralized phosphate   %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ % dP is total amount of remineralized phosphate in boxes below the
+ % mixed-layer.
+ 
+ % Determine where the mixed layer is located in the vector of coordinates.
+ inmixlyr = find(diag(A)==1);
+ notmixlyr = (1:N)'; notmixlyr(inmixlyr) = [];
+ 
+ N = length(i);
+ d = zeros(N,1);
+ d(notmixlyr) = -dP; % a vector with remineralized phosphate sources.
+ 
+ % DP is total remineralized phosphate including upstream contributions.
+ % to get quantity of dyed water throughout ocean:
+ DP = Q * (U \ (L \ (P * (R \ d))));  
+ DPfld = vector_to_field(DP,i,j,k);  % g is the 3-d field of water-mass concentration.
+ 
+ lon_section = 330;
+ isec = find(LON==330);
+ contourf(LAT,-DEPTH,squeeze(DPfld(:,:,isec)),0:0.05:1) % a sample plot at 22 W.
  
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 2: Find the ocean volume that has originated from each    %
