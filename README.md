@@ -1,17 +1,17 @@
 # TMI
 Total Matrix Intercomparison MATLAB diagnostic routines 
 
-Following Gebbie, G., and P. Huybers:  "Total matrix intercomparison: A method for resolving the geometry of water mass pathways", J. Phys. Oceanogr., 40(8), doi:10.1175/2010JPO4272.1, 1710-1728, 2010. \
+Following Gebbie, G., and P. Huybers:  "Total matrix intercomparison: A method for resolving the geometry of water mass pathways", J. Phys. Oceanogr., 40(8), doi:10.1175/2010JPO4272.1, 1710-1728, 2010. 
 
-Gebbie, G., and P. Huybers. "How is the ocean filled?", Geophys. Res. Lett., 38, L06604, doi:10.1029/2011GL046769, 2011 \
+Gebbie, G., and P. Huybers. "How is the ocean filled?", Geophys. Res. Lett., 38, L06604, doi:10.1029/2011GL046769, 2011 
 
-Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO. \
+Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO. 
 
-Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO.\
+Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO.
 
 Gebbie, G., "How much did Glacial North Atlantic Water shoal?", 2014, Paleoceanography.
 
-# Codes by Geoffrey (Jake) Gebbie, WHOI, jgebbie@whoi.edu, 508-289-2801, 2009-2016.
+# Codes by Geoffrey (Jake) Gebbie, WHOI, jgebbie@whoi.edu, 2009-2016.
 
 Version 1, 07 May 2009.\
 Version 2, 06 Aug 2010.\
