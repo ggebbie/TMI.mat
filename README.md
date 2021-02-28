@@ -8,18 +8,18 @@ Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocar
 
 # Codes by Geoffrey (Jake) Gebbie, WHOI, ggebbie@whoi.edu, 2009-2012.
 
-Version 1, 07 May 2009.
-Version 2, 06 Aug 2010.
-Version 3, 21 Apr 2011 -- minor changes.
-Version 4, 13 July 2011, makes names consistent with papers.
-Version 5, 28 July 2011, add TMI transient tracer simulation model.
+Version 1, 07 May 2009.\
+Version 2, 06 Aug 2010.\
+Version 3, 21 Apr 2011 -- minor changes.\
+Version 4, 13 July 2011, makes names consistent with papers.\
+Version 5, 28 July 2011, add TMI transient tracer simulation model.\
 Version 6, Nov 2012, bug fixes, use one LU decomp for both fwd and
                         adjoint, added global inversion example,
-                        SynTraCE-21 workshop update 
+                        SynTraCE-21 workshop update \
 
 # MAIN DIAGNOSTIC ROUTINES:
 
-tmi_diagnostics.m  : examples of analysis for the TMI pathways matrix.
+tmi_diagnostics.m  : examples of analysis for the TMI pathways matrix.\
 transient_driver.m : run a TMI transient tracer simulation model.
 
 # DATA FILES
@@ -34,7 +34,7 @@ d_all_4deg.mat:  predefined oceanographically-relevant surface dye patches.\
 c_all_4deg.mat:  predefined oceanographically-relevant initial dye concentrations for transient simulation.\
 tracerobs_4deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18, box-averaged at 4x4 resolution.\
 tracerobs_4deg_33lev_TMI.mat  : TMI climatology (unpublised, produced from 2012 pathways matrix)\
-tracerobs_2deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18, box-averaged at 2x2 resolution.\
+tracerobs_2deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18, box-averaged at 2x2 resolution.
 
 
 # SECONDARY MATLAB FUNCTIONS AND SCRIPTS. 
@@ -46,4 +46,4 @@ hessianprob.m : For use in large quadratic problems, such as the example
 sw_dist.m  : calculate distance using the seawater toolbox.\
 make_initial_conditions: for the TMI transient simulation.\
 mixit.m: used in make_initial_conditions\
-objfun.m: used in fmincon (example 4)\
+objfun.m: used in fmincon (example 4)
