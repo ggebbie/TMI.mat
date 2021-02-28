@@ -27,7 +27,7 @@ load A  %% choose a A*.mat file
 % Use an LU decomposition so that the inverse does not have
 % to be stored explicitly.
 % ALL EXAMPLES USE THIS CALCULATION.
- [L, U, P, Q, R] = lu (A) ;
+[L, U, P, Q, R] = lu (A) ;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 1: Track the pathways of a user-defined water mass.         %
@@ -157,7 +157,6 @@ load A  %% choose a A*.mat file
 % Very similar mathematically to example 2.                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-
  NZ = max(k);
  NY = max(j);
  NX = max(i);
@@ -165,9 +164,10 @@ load A  %% choose a A*.mat file
  
  % choose an interior location X (Xlon[lon], Xlat [lat], Xdepth [m depth]).
 % -7.38, 115.26E
- Xlon = 125.26; % deg E.
- Xlat = -6.38; 
- Xdepth = 500; % meters.
+% Xlon = 125.26; % deg E.
+% Xlat = -6.38; 
+ Xlon = 
+ Xdepth = 2500; % meters.
  
  % Find the coordinate on the grid by linear interpolation. 
  LONtmp = [LON(1)-4 ; LON; LON(end)+4];  %% watch out for the

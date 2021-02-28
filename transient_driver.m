@@ -3,7 +3,12 @@
 % G. Jake Gebbie, ggebbie@whoi.edu, WHOI, 27 July 2011.
 % updated: 16 Aug 2016 for the ACDC Summer School, Bonne Bay, NL,
 % Canada.
+%
 % Added to TMI v7, 8 Sept 2016
+%
+% Added to TMI v8, 30 Oct 2018, after ACDC Summer School, Finse,
+% Norway
+%
 % Based off: G. Gebbie & P. Huybers, "The mean age of ocean waters
 % inferred from radiocarbon observations: sensitivity to surface
 % sources and accounting for mixing histories", submitted, JPO.
@@ -32,8 +37,8 @@ make_initial_conditions
 
 %% Boundary conditions.
 % choose 'fixed' or 'varying' 
-%boundary_type = 'fixed';
-boundary_type = 'varying';
+boundary_type = 'fixed';
+%boundary_type = 'varying';
 make_boundary_conditions
 
 % Pre-allocate arrays.
@@ -64,11 +69,11 @@ end
 
 %% Now let plot at a given depth at a given time.
 depth_plot = 500; % choose a depth in meters.
-time_plot = 3; % choose a time in years.
+time_plot = 2; % choose a time in years.
 idepth = find(DEPTH==depth_plot);
 itime  = find(T==time_plot);
 figure
-contourf(LON,LAT,squeeze(Cfield(itime,idepth,:,:)),0:.05:1)
+contourf(LON,LAT,sq(Cfield(itime,idepth,:,:)),0:.05:1)
 ylabel('latitude [deg N]')
 xlabel('longitude [deg E]')
 colorbar
