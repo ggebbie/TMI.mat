@@ -1,5 +1,5 @@
 # TMI
-Total Matrix Intercomparison MATLAB diagnostic routines \
+Total Matrix Intercomparison MATLAB diagnostic routines 
 
 Following Gebbie, G., and P. Huybers:  "Total matrix intercomparison: A method for resolving the geometry of water mass pathways", J. Phys. Oceanogr., 40(8), doi:10.1175/2010JPO4272.1, 1710-1728, 2010. \
 
@@ -15,7 +15,7 @@ Version 4, 13 July 2011, makes names consistent with papers.\
 Version 5, 28 July 2011, add TMI transient tracer simulation model.\
 Version 6, Nov 2012, bug fixes, use one LU decomp for both fwd and
                         adjoint, added global inversion example,
-                        SynTraCE-21 workshop update \
+                        SynTraCE-21 workshop update 
 
 # MAIN DIAGNOSTIC ROUTINES:
 
