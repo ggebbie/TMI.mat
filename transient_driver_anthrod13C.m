@@ -16,7 +16,14 @@
 load L_4deg_2012
 
 %% List the years for which the global tracer is output.
-years = 0:2;
+
+% set t0 to be the time before which there is no anthropogenic
+% d13C.
+t0 = 1850;  % ? (look at atmospheric d13C to decide)
+tf = 2010;  % final time: when does the atmospheric d13C record
+            % end?
+
+years = t0:tf;
 % a longer example
 % years = [0:1:100 110:10:1000 1025:25:2000 2100:100:5000]; 
 % Note: if years only has 2 times, MATLAB will choose the output
@@ -26,22 +33,24 @@ NY = length(years)
 
 %% Initial conditions.  
 % choose 'predefined' or 'rectangle' 
-initial_type = 'rectangle'
+%initial_type = 'rectangle'
 %initial_type = 'predefined'
-make_initial_conditions
+initial_type = 'anthrod13C'
+make_initial_conditions_anthrod13C
 
 %% Boundary conditions.
 % choose 'fixed' or 'varying' 
 %boundary_type = 'fixed';
-boundary_type = 'varying';
-make_boundary_conditions
+%boundary_type = 'varying';
+boundary_type = 'anthrod13C';
+make_boundary_conditions_anthrod13C
 
 % Pre-allocate arrays.
 C = nan(NY,Nfield);
 T = nan(NY,1);
 
 % options for the ODE solver.
-options = odeset('RelTol',1e-4,'AbsTol',1e-4,'NonNegative',1:Nfield,'Jacobian',L);
+options = odeset('RelTol',1e-4,'AbsTol',1e-4,'Jacobian',L);
 
 switch boundary_type
   
@@ -49,11 +58,30 @@ case{'fixed'}
   [T,C] = ode15s(@(t,x) get_tendency(t,x,L),years,c0,options);
 case{'varying'}
   tau = 1./12; % monthly restoring timescale
-  isfc = find(kt==1);
- [T,C] = ode15s(@(t,x) get_tendency(t,x,L,B,isfc,tsfc,Csfc,tau),years,c0,options);
+  [T,C] = ode15s(@(t,x) get_tendency(t,x,L,B,isfc,tsfc,Csfc,tau),years,c0,options);
 end  
 
 save transient_output C T
+
+% This is the old method where I explicitly included checkpointing
+% to diagnose the state through time. If you don't get enough
+% output from the above method, let me know and we can try to
+% resurrect this code.
+% $$$ NN = (NY-1)./2;
+% $$$ for nn = 1:NN
+% $$$   nn
+% $$$   ind = nn*2-1:nn*2+1
+% $$$   yrs = years(ind)
+% $$$   Cin  = sq(C(ind(1),:));
+% $$$   tic
+% $$$   [Ttmp,Cout] = ode15s(@(t,x) get_tendency(t,x,L,Cb,B,isfc,tsfc,Csfc),yrs,Cin,options);
+% $$$   [Ttmp,Cout] = ode15s(@(t,x) At*x,yrs,Cin,options);
+% $$$   toc
+% $$$   C(ind,:) = sq(Cout);
+% $$$   T(ind) = sq(Ttmp);
+% $$$   %save ttdsummary C T % save intermediate values if necessary
+% $$$ end
+% $$$ save transient_output C T
 
 %% For efficiency, C is 2D, but that's hard to visualize. 
 %  Translate it to a 4D array: time x depth x latitude x longitude
@@ -89,6 +117,10 @@ xlabel('latitude [deg N]')
 ylabel('depth [m]')
 colorbar
 
+%% compute the global mean timeseries.
+load volume_4deg
+d13C_mean = (C*v)./sum(v); % volume weighted.
+ 
 
 
 

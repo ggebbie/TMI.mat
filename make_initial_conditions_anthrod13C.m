@@ -6,7 +6,15 @@
 %
 % returns c0: the initial conditions field
 
+
+% For anthrod13C, this part is easy: the initial conditions are
+% zero.
+
 switch initial_type
+  case {'anthrod13C'}
+    N = length(it);
+    c0 = zeros(N,1);
+    
   case {'predefined'}
 
     disp('predefined-region initial conditions')
