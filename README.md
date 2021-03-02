@@ -23,7 +23,7 @@ Version 6.1, Jan 2013, added biogeochemical example, add
                        vector_to_field back into tarball.\
 Version 6.2, July 2015, added sq.m function,
                         fixed d_all to properly divide Atlantic/Pacific and put White Sea into Arctic.\
-Version 7, Sept. 2016, major improvements to transient run: 2 types of initial conditions and boundary conditions.
+Version 7, Sept. 2016, major improvements to transient run: 2 types of initial conditions and boundary conditions.\
 Version 8, Jan. 2021, bug fixes, especially those found by Elaine McDonagh
 
 # MAIN DIAGNOSTIC ROUTINES:
@@ -35,8 +35,10 @@ transient_driver.m : run a TMI transient tracer simulation model.
 
 A_2deg_2010.mat : TMI pathways matrix with 2x2 degree horizontal
                   resolution and 33 levels  G & H 2010) \
-A_4deg_2012.mat : updated TMI pathways matrix with 4x4 degree horizontal
+A_4deg_2014.mat : TMI pathways matrix with 4x4 degree horizontal
                   resolution and 33 levels (reference case, Gebbie 2014 (Paleoceanography))  \
+A_4deg_2012.mat : updated from 2010 TMI pathways matrix with 4x4 degree horizontal
+                  resolution and 33 levels (unpublished)  \
 A_4deg_2010.mat : TMI pathways matrix with 4x4 degree horizontal resolution and 33 levels \
 L_4deg_2012.mat : TMI time tendency matrix (G & H 2012)\
 d_all_4deg.mat:  predefined oceanographically-relevant surface dye patches.\
@@ -62,4 +64,5 @@ mixit.m: used in make_initial_conditions\
 objfun.m: used in fmincon (example 4)\
 sq.m: replaces the squeeze function\
 get_hessian.m: For directly solving a least squares problem
+
 
