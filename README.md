@@ -37,9 +37,11 @@ transient_driver.m : run a TMI transient tracer simulation model.
 A_2deg_2010.mat : TMI pathways matrix with 2x2 degree horizontal
                   resolution and 33 levels  G & H 2010) \
 A_4deg_2012.mat : updated TMI pathways matrix with 4x4 degree horizontal
-                  resolution and 33 levels (reference case, Gebbie 2014 (Paleoceanography))  \
+                  resolution and 33 levels (unpublished)  \
+A_4deg_2014.mat : TMI pathways matrix with 4x4 degree horizontal
+                  resolution and 33 levels (reference case, Gebbie 2014 (Paleoceanography), no bottom spreading parameterization, mixed layer depth is solved instead of prescribed)  \
 A_4deg_2010.mat : TMI pathways matrix with 4x4 degree horizontal resolution and 33 levels \
-L_4deg_2012.mat : TMI time tendency matrix (G & H 2012)\
+L_4deg_2012.mat : TMI time tendency matrix (GH 2012)\
 d_all_4deg.mat:  predefined oceanographically-relevant surface dye patches.\
 c_all_4deg.mat:  predefined oceanographically-relevant initial dye concentrations for transient simulation.\
 tracerobs_4deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18, box-averaged at 4x4 resolution.\
