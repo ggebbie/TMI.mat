@@ -10,18 +10,14 @@
 %% Setup the TMI data.
 
 % Extract data from Google Drive using your favorite method. MATLAB's webread may be an alternative method. Google Drive may ask for spam confirmation for files bigger than 40 MB.
-%!wget https://drive.google.com/uc?export=download&id=1B03OHj82XT7A_ip48WtLmDF01zvQiz4v
-%!wget https://drive.google.com/uc?export=download&id=1nFDSINbst84pK68aWwRGBVfYZkfN1mUR
-%!wget https://drive.google.com/uc?export=download&id=1nFDSINbst84pK68aWwRGBVfYZkfN1mUR
-%!wget https://drive.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm
-
 !wget  --no-check-certificate 'https://drive.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD' -O TMI_2x2deg_data.tar.gz
-
 !wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm' -O TMI_4x4deg_data.tar.gz
 
+!tar xvzf TMI_2x2deg_data.tar.gz 
+!rm TMI_2x2deg_data.tar.gz
 
-!tar xvzf tmi_data.tar.gz 
-!rm tmi_data.tar.gz
+!tar xvzf TMI_4x4deg_data.tar.gz 
+!rm TMI_4x4deg_data.tar.gz
 
 % make sure matlab paths are set
 codedir = pwd
@@ -52,7 +48,6 @@ switch TMIversion
 end
 
 %% variables in A*.mat %%%
-%
 % A: pathways matrix
 % i,j,k (or it,jt,kt): vectors that contain the spatial coordinates 
 %        consistent with the A matrix.
