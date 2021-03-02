@@ -7,14 +7,20 @@
 %  example 6: Follow the adjoint transport pathways.
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Setup the TMI data.
 % load the master file: choose either woce2deg or woce4deg 
 % (2 deg == 2 x 2 horiz resolution, 33 vertical levels)
 % (4 deg == 4 x 4 horiz resolution, 33 vertical levels)
 % (woce == trained on the WOCE Global Hydrographic Climatology,
 %          Gouretski and Koltermann 2004)
 
+4deg_2010
+url='https://drive.google.com/uc?export=download&id=1wxNdHSnPJqmtIaWTvCVBxg8Wf_6ZCboE'
 load A  %% choose a A*.mat file
- 
+https://drive.google.com/uc?export=download&id=1B03OHj82XT7A_ip48WtLmDF01zvQiz4v
+
+rive.google.com/file/d/1B03OHj82XT7A_ip48WtLmDF01zvQiz4v/view?usp=sharing
+
 % variables in A*.mat %%%
 %
 % A: pathways matrix
