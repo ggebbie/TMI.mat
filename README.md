@@ -5,8 +5,6 @@ Following Gebbie, G., and P. Huybers:  "Total matrix intercomparison: A method f
 
 Gebbie, G., and P. Huybers. "How is the ocean filled?", Geophys. Res. Lett., 38, L06604, doi:10.1029/2011GL046769, 2011 
 
-Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO. 
-
 Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO.
 
 Gebbie, G., "How much did Glacial North Atlantic Water shoal?", 2014, Paleoceanography.
@@ -26,6 +24,7 @@ Version 6.1, Jan 2013, added biogeochemical example, add
 Version 6.2, July 2015, added sq.m function,
                         fixed d_all to properly divide Atlantic/Pacific and put White Sea into Arctic.\
 Version 7, Sept. 2016, major improvements to transient run: 2 types of initial conditions and boundary conditions.
+Version 8, Jan. 2021, bug fixes, especially those found by Elaine McDonagh
 
 # MAIN DIAGNOSTIC ROUTINES:
 
