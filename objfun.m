@@ -14,7 +14,7 @@ Nx = length(x);
 Nsfc = length(isfc);
 Nint = length(iint);
 Nfield = size(A,1);
-Nc = length(noncons);
+Nc = length(noncons)
 
 J = 0;
 g = zeros(Nx,1);
@@ -109,4 +109,5 @@ for nc = 1:Nc
   end % adjoint loop
 end % tracers loop
 
-   
+end
+
