@@ -5,8 +5,6 @@ Following Gebbie, G., and P. Huybers:  "Total matrix intercomparison: A method f
 
 Gebbie, G., and P. Huybers. "How is the ocean filled?", Geophys. Res. Lett., 38, L06604, doi:10.1029/2011GL046769, 2011 
 
-Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO. 
-
 Gebbie, G., and P. Huybers, "The mean age of ocean waters inferred from radiocarbon observations", 2012, JPO.
 
 Gebbie, G., "How much did Glacial North Atlantic Water shoal?", 2014, Paleoceanography.
@@ -26,6 +24,7 @@ Version 6.1, Jan 2013, added biogeochemical example, add
 Version 6.2, July 2015, added sq.m function,
                         fixed d_all to properly divide Atlantic/Pacific and put White Sea into Arctic.\
 Version 7, Sept. 2016, major improvements to transient run: 2 types of initial conditions and boundary conditions.
+Version 8, Jan. 2021, bug fixes, especially those found by Elaine McDonagh
 
 # MAIN DIAGNOSTIC ROUTINES:
 
@@ -36,12 +35,12 @@ transient_driver.m : run a TMI transient tracer simulation model.
 
 A_2deg_2010.mat : TMI pathways matrix with 2x2 degree horizontal
                   resolution and 33 levels  G & H 2010) \
-A_4deg_2012.mat : updated TMI pathways matrix with 4x4 degree horizontal
-                  resolution and 33 levels (unpublished)  \
 A_4deg_2014.mat : TMI pathways matrix with 4x4 degree horizontal
-                  resolution and 33 levels (reference case, Gebbie 2014 (Paleoceanography), no bottom spreading parameterization, mixed layer depth is solved instead of prescribed)  \
+                  resolution and 33 levels (reference case, Gebbie 2014 (Paleoceanography))  \
+A_4deg_2012.mat : updated from 2010 TMI pathways matrix with 4x4 degree horizontal
+                  resolution and 33 levels (unpublished)  \
 A_4deg_2010.mat : TMI pathways matrix with 4x4 degree horizontal resolution and 33 levels \
-L_4deg_2012.mat : TMI time tendency matrix (GH 2012)\
+L_4deg_2012.mat : TMI time tendency matrix (G & H 2012)\
 d_all_4deg.mat:  predefined oceanographically-relevant surface dye patches.\
 c_all_4deg.mat:  predefined oceanographically-relevant initial dye concentrations for transient simulation.\
 tracerobs_4deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18, box-averaged at 4x4 resolution.\
@@ -65,4 +64,5 @@ mixit.m: used in make_initial_conditions\
 objfun.m: used in fmincon (example 4)\
 sq.m: replaces the squeeze function\
 get_hessian.m: For directly solving a least squares problem
+
 
