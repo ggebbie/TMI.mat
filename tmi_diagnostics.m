@@ -10,8 +10,9 @@
 %% Setup the TMI data.
 
 % Extract data from Google Drive using your favorite method. MATLAB's webread may be an alternative method. Google Drive may ask for spam confirmation for files bigger than 40 MB.
-!wget  --no-check-certificate 'https://drive.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD' -O TMI_2x2deg_data.tar.gz
-!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm' -O TMI_4x4deg_data.tar.gz
+! wget   --no-check-certificate 'https://drive.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD' -O TMI_4x4deg_data.tar.gz
+
+! wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm" -O TMI_2x2deg_data.tar.gz && rm -rf /tmp/cookies.txt
 
 !tar xvzf TMI_2x2deg_data.tar.gz 
 !rm TMI_2x2deg_data.tar.gz
@@ -69,11 +70,11 @@ inmixlyr = find(diag(A)==1);
 N = length(i) % total number of gridcells
 Nmix = length(inmixlyr) % number of mixed layer points
 inotmixlyr = (1:N)'; inotmixlyr(inmixlyr) = [];
-Nint = length(notmixlyr)  % number of interior points
+Nint = length(inotmixlyr)  % number of interior points
 
 % if remineralized phosphate field is bigger than number of interior points, trim it for consistency.
 if length(dP) > Nint
-    dP = dP(iinotmixlyr);
+    dP = dP(inotmixlyr);
 end
 
 %% Most examples are computationally more efficient with the output of a LU decomposition.
@@ -175,13 +176,12 @@ end
 
  % km for 1 degree of latitude, could use sw_dist to get exact value.
  % disty = sw_dist([0 dy],[0 0],'km')
- disty = 111.12 
-
+ disty = 111.12 %km
  
  %for ny = 1:length(LAT)
  %  distx(ny) = sw_dist([LAT(ny) LAT(ny)],[0 dx],'km');
  %end
- distx = transpose(dx.*disty.*cosd(LAT)) % formula instead of sw_dist
+ distx = transpose(dx.*disty.*cosd(LAT)); % formula instead of sw_dist
  
  distx = reshape(distx,length(distx),1); % get dimensions correct.
  area = 1e6.*disty(ones(NY,NX)).*distx(:,ones(NX,1)); 
@@ -252,9 +252,9 @@ end
  Vtot = squeeze(Vtot(1,:,:)); % just keep the surface as that is
                               % the ultimate source region.
  figure(104)
- contourf(LON,LAT,Vtot,[0 .001 .005 .01 .05 .1 .5]) % one way to
-                                                    % plot it.
+ contourf(LON,LAT,Vtot,[0 exp(-9:.5:-5)]) % quick plot
 
+ 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 4: Find the distribution of a tracer given:              %
 %       (a) the pathways described by A,                          %
