@@ -302,52 +302,56 @@ switch TMIversion
   otherwise
     disp('option not available')
 end
-  
-  dT = Tobs;      % set rhs vector to the observations.
-  dT(k>1) = 0;    % no internal sinks or sources.
 
-  % a first guess: observed surface boundary conditions are perfect.  
-  Tmod1 =  Q * (U \ (L \ (P * (R \ dT))));
-  Tmod1_field = vector_to_field(Tmod1,i,j,k);
+% check that the choice is consistent with pathways matrix.
+if length(Tobs) ~= N  % N should be availabe from preamble of script above.
+    disp('inconsistent obs and pathways matrix')
+end
  
-  % get cost function (J) for first guess temperature field.
-  % here the data-model misfit is weighted by the expected error. 
-  Nfield = length(Tobs);
+dT = Tobs;      % set rhs vector to the observations.
+dT(k>1) = 0;    % no internal sinks or sources.
 
-  invWT{1} = sparse(1:Nfield,1:Nfield,1./Terr.^2,Nfield,Nfield); % diagonal matrix.
-  J1 = (Tmod1-Tobs)'*invWT*(Tmod1-Tobs)./Nfield % optimized J1 = 1
+% a first guess: observed surface boundary conditions are perfect.  
+Tmod1 =  Q * (U \ (L \ (P * (R \ dT))));
+Tmod1_field = vector_to_field(Tmod1,i,j,k);
  
-  % Get better fit to observations by modifying the surface boundary 
-  % condition within its uncertainty.
-  % mathematical form: Find uT such that:
-  % J = (Tmod-Tobs)'*inv(WT)*(Tmod-Tobs) is minimized 
-  % subject to:  A*Tmod = dT + Gamma * uT.
-  Nsfc = sum(k==1);
-  Gamma = sparse(Nfield,Nsfc);
-  nu = 0;
-  for nv = 1:Nfield
+% get cost function (J) for first guess temperature field.
+% here the data-model misfit is weighted by the expected error. 
+
+invWT{1} = sparse(1:N,1:N,1./Terr.^2,N,N); % diagonal matrix.
+J1 = (Tmod1-Tobs)'*invWT*(Tmod1-Tobs)./N % optimized J1 = 1
+ 
+% Get better fit to observations by modifying the surface boundary 
+% condition within its uncertainty.
+% mathematical form: Find uT such that:
+% J = (Tmod-Tobs)'*inv(WT)*(Tmod-Tobs) is minimized 
+% subject to:  A*Tmod = dT + Gamma * uT.
+Nsfc = sum(k==1);
+Gamma = sparse(N,Nsfc);
+nu = 0;
+for nv = 1:N
     if k(nv)==1
-      nu = nu+1;
-      Gamma(nv,nu) = 1;
+        nu = nu+1;
+        Gamma(nv,nu) = 1;
     end
-  end
-  u0 = zeros(Nsfc,1); % first guess of change to surface boundary
+end
+u0 = zeros(Nsfc,1); % first guess of change to surface boundary
                       % conditions.
-  lbT = -2.*ones(Nsfc,1); % temperature lower bound: can not freeze.
-  ubT = 40.*ones(Nsfc,1); % ad-hoc temperature upper bound: 40 C.
+lbT = -2.*ones(Nsfc,1); % temperature lower bound: can not freeze.
+ubT = 40.*ones(Nsfc,1); % ad-hoc temperature upper bound: 40 C.
 
-  %% 3 methods: 1) Constrained minimization with Lagrange multipliers 
-  %(but without inequality constraints), 2) quadratic programming using full Hessian,
-  % 3) quadratic programming using functional form of Hessian, 
-  % 4) Unconstrained minimization according to Gebbie et al. 2015 (QSR). 
+%% 4 numerical methods: 1) Constrained minimization with Lagrange multipliers 
+%(but without inequality constraints), 2) quadratic programming using full Hessian,
+% 3) quadratic programming using functional form of Hessian, 
+% 4) Unconstrained minimization according to Gebbie et al. 2015 (QSR). 
 
-  % Here we proceed with method #1.
-  options = optimset('Algorithm','interior-point','Display','iter', ...
-                  'GradObj','on','LargeScale','on');
-  % also can try 'Algorithm','trust-region-reflective'
-  noncons = 0;
-  isfc = find(kt==1);
-  uTtilde= fmincon(@(x)objfun(x,A,invWT,Tobs,isfc,inotmixlyr,noncons),Tobs(isfc),[],[],[],[],lbT,ubT,[],options);
-  J2 = objfun(uTtilde,A,invWT,Tobs,isfc,inotmixlyr,noncons) % expect J2 ~ 1, J2<J1
-  d2 = zeros(Nfield,1); d2(isfc) = uTtilde;
-  Tmod2 =  Q * (U \ (L \ (P * (R \ d2)))) ; % best estimate
+% Here we proceed with method #1. Warning: convergence may take 30+ minutes.
+options = optimset('Algorithm','interior-point','Display','iter', ...
+                  'GradObj','on','LargeScale','on','maxiter',10);
+% also can try 'Algorithm','trust-region-reflective'
+noncons = 0;
+isfc = find(kt==1);
+uTtilde= fmincon(@(x)objfun(x,A,invWT,Tobs,isfc,inotmixlyr,noncons),Tobs(isfc),[],[],[],[],lbT,ubT,[],options);
+J2 = objfun(uTtilde,A,invWT,Tobs,isfc,inotmixlyr,noncons) % expect J2 ~ 1, J2<J1
+d2 = zeros(N,1); d2(isfc) = uTtilde;
+Tmod2 =  Q * (U \ (L \ (P * (R \ d2)))) ; % best estimate
