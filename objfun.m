@@ -4,17 +4,17 @@ function [J,g] = objfun(x,A,W,cobs,isfc,iint,noncons,iintdst,iintsrc)
 % Pass A, W, cobs, isfc, iint, noncons, iintdst, iintsrc,
 % Last 2 arguments are optional for the case where pathways are changing.
 % Gradient "g" output argument is optional.
-nargin
-adjoint = (nargout == 2) % calculate gradient with adjoint.
-mod_paths = (nargin==9) % interior pathways = control
-mod_noncons = max(abs(noncons))>0 % interior nonconservative
+
+adjoint = (nargout == 2); % calculate gradient with adjoint.
+mod_paths = (nargin==9); % interior pathways = control
+mod_noncons = max(abs(noncons))>0; % interior nonconservative
                                    % source = control
 
 Nx = length(x);
 Nsfc = length(isfc);
 Nint = length(iint);
 Nfield = size(A,1);
-Nc = length(noncons)
+Nc = length(noncons);
 
 J = 0;
 g = zeros(Nx,1);
@@ -73,7 +73,7 @@ end
 
 % now scroll through the tracers.
 for nc = 1:Nc
-  nc
+
   d = zeros(Nfield,1);
   isfctmp = ((nc-1)*Nsfc)+1:nc*Nsfc;
   d(isfc) = x(isfctmp);

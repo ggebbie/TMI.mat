@@ -1,18 +1,22 @@
-%% tmi_diagnostics.m Total Matrix Intercomparison (TMI) diagnostic routines
+%% steadystate_diagnostics.m Total Matrix Intercomparison (TMI) diagnostic routines
 %  example 1: track surface waters into interior
 %  example 2: Find the volume that has originated from surface
 %  example 3: Find surface origin of an interior box
 %  example 4: Reconstruct steady-state tracer field.
-%  example 5: Construct the pathways matrix from observations.
-%  example 6: Follow the adjoint transport pathways.
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Setup the TMI data.
 
-% Extract data from Google Drive using your favorite method. MATLAB's webread may be an alternative method. Google Drive may ask for spam confirmation for files bigger than 40 MB.
-! wget   --no-check-certificate 'https://drive.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD' -O TMI_4x4deg_data.tar.gz
+% Extract data from Google Drive using your favorite method. MATLAB's webread may be an alternative method. Google Drive may ask for spam confirmation for files bigger than 40 MB. Sometimes throws ERROR: cannot verify docs.google.com's certificate, but still works.
 
+% Or, download manually at: https://docs.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD and https://docs.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm
+
+% Download TMI_4x4deg_data.tar.gz from Google Drive
+! wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm" -O TMI_4x4deg_data.tar.gz && rm -rf /tmp/cookies.txt
+
+% Download TMI_2x2deg_data.tar.gz from Google Drive
 ! wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm" -O TMI_2x2deg_data.tar.gz && rm -rf /tmp/cookies.txt
+
 
 !tar xvzf TMI_2x2deg_data.tar.gz 
 !rm TMI_2x2deg_data.tar.gz
@@ -32,7 +36,7 @@ addpath(datadir)
 TMIproducts = {'GH2010_2x2deg','GH2010_4x4deg','G2012_4x4deg','G2014_4x4deg'}
 
 % choose the case
-TMIno = 1; % select 1, 2, 3, 4
+TMIno = 2; % select 1, 2, 3, 4
 TMIversion = TMIproducts{TMIno}
 
 switch TMIversion
@@ -136,7 +140,9 @@ end
      
  figure(101)
  contourf(LAT,-DEPTH,squeeze(C(:,:,isec)),0:0.05:1) % a sample plot at 22 W.
-
+ xlabel('latitude [deg N]')
+ ylabel('depth [m]')
+ 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 1B: Determine the total amount of remineralized phosphate   %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,6 +164,8 @@ end
  end
  figure(102)
  contourf(LAT,-DEPTH,squeeze(DPfld(:,:,isec)),0:0.05:1) % a sample plot at 22 W.
+ xlabel('latitude [deg N]')
+ ylabel('depth [m]')
  
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 2: Find the ocean volume that has originated from each    %
@@ -205,6 +213,8 @@ end
  Vtot = sq(Vtot(1,:,:))./area; % scale the volume by surface area.
  figure(103)
  contourf(LON,LAT,log10(Vtot),1:0.25:7) % units: effective thickness
+ xlabel('longitude')
+ ylabel('latitude')
  
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example 3: Find the surface origin of water for some interior box %
@@ -261,5 +271,83 @@ end
  figure(104)
  contourf(LON,LAT,Vtot,[0 exp(-9:.5:-5)]) % quick plot
 
-
+ xlabel('latitude')
+ ylabel('longitude')
    
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Example 4: Find the distribution of a tracer given:              %
+%       (a) the pathways described by A,                          %
+%       (b) interior sources and sinks given by dC,               % 
+%           that best fits observations, Cobs,                    %
+%   and (c) inequality constraints on the tracer concentration.   %
+%                                                                  %
+% Mathematically, minimize J = (C-Cobs)^T W (C-Cobs) subject to    %
+%                         AC = d + Gamma u                         %
+%  where u is the estimated change in surface concentration.    % 
+%
+% See Supplementary Section 2, Gebbie & Huybers 2011.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+ 
+  % use temperature as an example, with Tobs the observed temperature vector.
+  % load temperature in vector form, along with associated error.
+switch TMIversion
+  case 'GH2010_2x2deg'
+    load tracerobs_2deg_33lev_woce
+  case 'GH2010_4x4deg'
+    load tracerobs_4deg_33lev_woce
+  case 'G2012_4x4deg'
+    load tracerobs_4deg_33lev_woce
+  case 'G2014_4x4deg'
+    load tracerobs_4deg_33lev_woce
+  otherwise
+    disp('option not available')
+end
+  
+  dT = Tobs;      % set rhs vector to the observations.
+  dT(k>1) = 0;    % no internal sinks or sources.
+
+  % a first guess: observed surface boundary conditions are perfect.  
+  Tmod1 =  Q * (U \ (L \ (P * (R \ dT))));
+  Tmod1_field = vector_to_field(Tmod1,i,j,k);
+ 
+  % get cost function (J) for first guess temperature field.
+  % here the data-model misfit is weighted by the expected error. 
+  Nfield = length(Tobs);
+
+  invWT{1} = sparse(1:Nfield,1:Nfield,1./Terr.^2,Nfield,Nfield); % diagonal matrix.
+  J1 = (Tmod1-Tobs)'*invWT*(Tmod1-Tobs)./Nfield % optimized J1 = 1
+ 
+  % Get better fit to observations by modifying the surface boundary 
+  % condition within its uncertainty.
+  % mathematical form: Find uT such that:
+  % J = (Tmod-Tobs)'*inv(WT)*(Tmod-Tobs) is minimized 
+  % subject to:  A*Tmod = dT + Gamma * uT.
+  Nsfc = sum(k==1);
+  Gamma = sparse(Nfield,Nsfc);
+  nu = 0;
+  for nv = 1:Nfield
+    if k(nv)==1
+      nu = nu+1;
+      Gamma(nv,nu) = 1;
+    end
+  end
+  u0 = zeros(Nsfc,1); % first guess of change to surface boundary
+                      % conditions.
+  lbT = -2.*ones(Nsfc,1); % temperature lower bound: can not freeze.
+  ubT = 40.*ones(Nsfc,1); % ad-hoc temperature upper bound: 40 C.
+
+  %% 3 methods: 1) Constrained minimization with Lagrange multipliers 
+  %(but without inequality constraints), 2) quadratic programming using full Hessian,
+  % 3) quadratic programming using functional form of Hessian, 
+  % 4) Unconstrained minimization according to Gebbie et al. 2015 (QSR). 
+
+  % Here we proceed with method #1.
+  options = optimset('Algorithm','interior-point','Display','iter', ...
+                  'GradObj','on','LargeScale','on');
+  % also can try 'Algorithm','trust-region-reflective'
+  noncons = 0;
+  isfc = find(kt==1);
+  uTtilde= fmincon(@(x)objfun(x,A,invWT,Tobs,isfc,inotmixlyr,noncons),Tobs(isfc),[],[],[],[],lbT,ubT,[],options);
+  J2 = objfun(uTtilde,A,invWT,Tobs,isfc,inotmixlyr,noncons) % expect J2 ~ 1, J2<J1
+  d2 = zeros(Nfield,1); d2(isfc) = uTtilde;
+  Tmod2 =  Q * (U \ (L \ (P * (R \ d2)))) ; % best estimate
