@@ -319,7 +319,7 @@ Tmod1_field = vector_to_field(Tmod1,i,j,k);
 % here the data-model misfit is weighted by the expected error. 
 
 invWT{1} = sparse(1:N,1:N,1./Terr.^2,N,N); % diagonal matrix.
-J1 = (Tmod1-Tobs)'*invWT*(Tmod1-Tobs)./N % optimized J1 = 1
+J1 = (Tmod1-Tobs)'*invWT{1}*(Tmod1-Tobs)./N % optimized J1 = 1
  
 % Get better fit to observations by modifying the surface boundary 
 % condition within its uncertainty.
@@ -347,11 +347,11 @@ ubT = 40.*ones(Nsfc,1); % ad-hoc temperature upper bound: 40 C.
 
 % Here we proceed with method #1. Warning: convergence may take 30+ minutes.
 options = optimset('Algorithm','interior-point','Display','iter', ...
-                  'GradObj','on','LargeScale','on','maxiter',10);
+                  'GradObj','on','LargeScale','on','TolX',1e-1);
 % also can try 'Algorithm','trust-region-reflective'
 noncons = 0;
 isfc = find(kt==1);
 uTtilde= fmincon(@(x)objfun(x,A,invWT,Tobs,isfc,inotmixlyr,noncons),Tobs(isfc),[],[],[],[],lbT,ubT,[],options);
-J2 = objfun(uTtilde,A,invWT,Tobs,isfc,inotmixlyr,noncons) % expect J2 ~ 1, J2<J1
+J2 = objfun(uTtilde,A,invWT,Tobs,isfc,inotmixlyr,noncons)./N % expect J2 ~ 1, J2<J1
 d2 = zeros(N,1); d2(isfc) = uTtilde;
 Tmod2 =  Q * (U \ (L \ (P * (R \ d2)))) ; % best estimate

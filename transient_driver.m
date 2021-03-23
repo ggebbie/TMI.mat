@@ -14,11 +14,35 @@
 % sources and accounting for mixing histories", submitted, JPO.
 % TMI = Total Matrix Intercomparison, Gebbie & Huybers, JPO, 2010.
 
+% download input data according to preamble of steadystate_diagnostics.
+
+%% Choose the TMI version of interest.
+% For steady-state water-mass matrix, there are four choices.
+TMIproducts = {'GH2012_2x2deg','GH2012_4x4deg'}
+
+% choose the case
+TMIno = 2; % select 1, 2,
+TMIversion = TMIproducts{TMIno}
 
 %% Load the TMI tendency matrix, L, and the boundary matrix, B, 
 %  which satisfies dc/dt = L*c + B*q, 
 %  where c is a global tracer distribution and q is a boundary flux.
-load L_4deg_2012
+switch TMIversion
+  case 'GH2012_2x2deg'
+    load L_2deg_2012
+  case 'GH2012_4x4deg'
+    load L_4deg_2012
+  otherwise
+    disp('option not available')
+end
+
+% make sure mixed-layer variables are vectors.
+if size(inmixlyr,2) > 1
+    inmixlyr = inmixlyr';
+end
+if size(imixlyr,2) > 1
+    imixlyr = imixlyr';
+end
 
 %% List the years for which the global tracer is output.
 years = 0:2;
@@ -48,6 +72,7 @@ T = nan(NY,1);
 % options for the ODE solver.
 options = odeset('RelTol',1e-4,'AbsTol',1e-4,'NonNegative',1:Nfield,'Jacobian',L);
 
+% run the forward model with t in units of years
 switch boundary_type
   
 case{'fixed'}
@@ -58,13 +83,15 @@ case{'varying'}
  [T,C] = ode15s(@(t,x) get_tendency(t,x,L,B,isfc,tsfc,Csfc,tau),years,c0,options);
 end  
 
-save transient_output C T
+% A simple save statement to a .mat file.
+%save transient_output C T
 
 %% For efficiency, C is 2D, but that's hard to visualize. 
 %  Translate it to a 4D array: time x depth x latitude x longitude
+clear Cfield
 for nn = 1:NY
     nn
-    Cfield(nn,:,:,:) = vector_to_field(squeeze(C(nn,:)),it,jt,kt);
+    Cfield(nn,:,:,:) = vector_to_field(sq(C(nn,:)),it,jt,kt);
 end
 
 %% Now let plot at a given depth at a given time.
@@ -80,16 +107,21 @@ colorbar
 
 %% Or plot a meridional section at a given longitude and time.
 lon_plot = -30;
-time_plot = 3; % choose a time in years.
+time_plot = 2; % choose a time in years.
 itime  = find(T==time_plot);
 if lon_plot < 0
-  ilon = find(LON== 360+lon_plot)
-else
-  ilon = find(LON== lon_plot);
+    lon_plot = lon_plot + 360;
 end
 
+% make sure your choice lines up on the TMI grid.
+% Warning: this while loop is not foolproof!
+while isempty(ilon) 
+     ilon = find(LON==lon_plot);
+     lon_plot = lon_plot - 1; % in case we need to continue searching
+end
+ 
 figure
-contourf(LAT,-DEPTH,squeeze(Cfield(itime,:,:,ilon)),0:.05:1)
+contourf(LAT,-DEPTH,sq(Cfield(itime,:,:,ilon)),0:.05:1)
 xlabel('latitude [deg N]')
 ylabel('depth [m]')
 colorbar

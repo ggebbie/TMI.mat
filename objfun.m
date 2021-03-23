@@ -85,8 +85,8 @@ for nc = 1:Nc
   c =  Q * (U \ (L \ (P * (R \ d)))) ; % tracer distribution.
 
   misfit = c-cobs(:,nc);
-  J = J+misfit'*W{nc}*misfit
-  (misfit'*W{nc}*misfit)./Nfield
+  J = J+misfit'*W{nc}*misfit;
+  (misfit'*W{nc}*misfit)./Nfield % normalized value should approach one
 
   %% get Gradient of cost function w.r.t. independent parameters.
   if nargout == 2
