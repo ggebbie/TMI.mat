@@ -28,7 +28,7 @@ Version 8, Jan. 2021, bug fixes, especially those found by Elaine McDonagh
 
 # MAIN DIAGNOSTIC ROUTINES:
 
-tmi_diagnostics.m  : examples of analysis for the TMI pathways matrix.\
+steadystate_diagnostics.m  : examples of analysis for the TMI pathways matrix.\
 transient_driver.m : run a TMI transient tracer simulation model.
 
 # DATA FILES
@@ -48,12 +48,10 @@ tracerobs_4deg_33lev_TMI.mat  : TMI climatology (unpublised, produced from 2012 
 tracerobs_2deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18, box-averaged at 2x2 resolution.
 
 
-# SECONDARY MATLAB FUNCTIONS AND SCRIPTS. 
+# SECONDARY MATLAB FUNCTIONS AND SCRIPTS: 
 
 field_to_vector.m : transfer from a 3D field to a vector\
 vector_to_field.m : and vice versa\
-hessianprob.m : For use in large quadratic problems, such as the example
-                in tmi_diagnostics.\
 sw_dist.m  : calculate distance using the seawater toolbox.\
 make_initial_conditions: for the TMI transient simulation.\
 make_boundary_conditions: for the TMI transient simulation -- allow time varying surface concentration\
@@ -62,7 +60,6 @@ get_tendency: get time rate of change in transient simulation\
 get_restoring_flux: calculate a Newtonian relaxation forcing at the sea surface (for transient run)\
 mixit.m: used in make_initial_conditions\
 objfun.m: used in fmincon (example 4)\
-sq.m: replaces the squeeze function\
-get_hessian.m: For directly solving a least squares problem
+sq.m: replaces the squeeze function
 
 
