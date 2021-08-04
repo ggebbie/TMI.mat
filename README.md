@@ -28,14 +28,14 @@ Version 8, Jan. 2021, bug fixes, especially those found by Elaine McDonagh
 
 # MAIN DIAGNOSTIC ROUTINES:
 
-steadystate_diagnostics.m  : examples of analysis for the TMI pathways matrix.\
-transient_driver.m : run a TMI transient tracer simulation model.
+`steadystate_diagnostics.m`  : examples of analysis for the TMI pathways matrix.\
+`transient_driver.m` : run a TMI transient tracer simulation model.
 
 # DATA FILES
 
 Extract data from Google Drive using your favorite method.Try the script `read_TMI_from_google_drive`. MATLAB's webread may be an alternative method. Google Drive may ask for spam confirmation for files bigger than 40 MB. Sometimes throws ERROR: cannot verify docs.google.com's certificate, but still works. 
 
-Or download manually at: https://docs.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD and https://docs.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm   
+Or download manually at: https://docs.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD and https://docs.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm
 
 A_2deg_2010.mat : TMI pathways matrix with 2x2 degree horizontal
                   resolution and 33 levels  G & H 2010) \
@@ -65,5 +65,3 @@ get_restoring_flux: calculate a Newtonian relaxation forcing at the sea surface 
 mixit.m: used in make_initial_conditions\
 objfun.m: used in fmincon (example 4)\
 sq.m: replaces the squeeze function
-
-
