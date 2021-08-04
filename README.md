@@ -33,6 +33,10 @@ transient_driver.m : run a TMI transient tracer simulation model.
 
 # DATA FILES
 
+Extract data from Google Drive using your favorite method. MATLAB's webread may be an alternative method. Google Drive may ask for spam confirmation for files bigger than 40 MB. Sometimes throws ERROR: cannot verify docs.google.com's certificate, but still works. \
+
+Download manually at: https://docs.google.com/uc?export=download&id=1L5i5eQ0QCrrqPKGoAxuB8X4_CltvQBMD and https://docs.google.com/uc?export=download&id=1xAkrTNybqoAKtFMuJ9XU9z9KZwnLenzm   \
+
 A_2deg_2010.mat : TMI pathways matrix with 2x2 degree horizontal
                   resolution and 33 levels  G & H 2010) \
 A_4deg_2014.mat : TMI pathways matrix with 4x4 degree horizontal
