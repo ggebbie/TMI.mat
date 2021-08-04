@@ -14,7 +14,10 @@
 % sources and accounting for mixing histories", submitted, JPO.
 % TMI = Total Matrix Intercomparison, Gebbie & Huybers, JPO, 2010.
 
-% download input data according to preamble of steadystate_diagnostics.
+%% Setup the TMI data.
+% use this MATLAB script or 
+% download manually via instructions in README
+read_TMI_from_google_drive
 
 %% Choose the TMI version of interest.
 % For steady-state water-mass matrix, there are four choices.
