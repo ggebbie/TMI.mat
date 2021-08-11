@@ -28,8 +28,10 @@ Version 8, Jan. 2021, bug fixes, especially those found by Elaine McDonagh
 
 # MAIN DIAGNOSTIC ROUTINES:
 
+Directory `scripts`: \ 
 `steadystate_diagnostics.m`  : examples of analysis for the TMI pathways matrix.\
 `transient_driver.m` : run a TMI transient tracer simulation model.
+
 
 # DATA FILES
 
@@ -57,6 +59,8 @@ tracerobs_2deg_33lev_woce.mat  : WOCE global hydrographic climatology + GISS O18
 
 
 # SECONDARY MATLAB FUNCTIONS AND SCRIPTS: 
+
+Source code in directory `src`:
 
 field_to_vector.m : transfer from a 3D field to a vector\
 vector_to_field.m : and vice versa\
