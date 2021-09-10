@@ -13,9 +13,10 @@ read_TMI_from_google_drive
 % make sure matlab paths are set
 codedir = pwd
 datadir = [codedir,'/data']
-
+srcdir = [codedir,'/src']
 addpath(codedir) 
 addpath(datadir)
+addpath(srcdir)
 
 %% Choose the TMI version of interest.
 % For steady-state water-mass matrix, there are four choices.
@@ -124,8 +125,10 @@ end
      isec = find(LON==329);
  end
      
- figure(101)
- contourf(LAT,-DEPTH,squeeze(C(:,:,isec)),0:0.05:1) % a sample plot at 22 W.
+ colors = flipud(hot(10));
+ title = 'Section Plot, % from source'
+ plot_section(100.*C(:,:,isec),LAT,DEPTH,[],[],[],[],[0 100],[0:10:100],title,colors,true)
+ %contourf(LAT,-DEPTH,squeeze(C(:,:,isec)),0:0.05:1) % a sample plot at 22 W.
  xlabel('latitude [deg N]')
  ylabel('depth [m]')
  
